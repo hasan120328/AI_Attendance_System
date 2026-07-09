@@ -1,0 +1,76 @@
+streamlit
+supabase
+python-dotenv
+pandas
+numpy
+pillow
+bcrypt
+opencv-python
+insightface
+onnxruntime
+torch
+torchvision
+torchaudio
+speechbrain
+sounddevice
+soundfile
+scipy
+segno
+pyzbar
+streamlit-webrtc
+audio-recorder-streamlit
+scikit-learn
+matplotlib
+imageio
+mediapipe
+easyocr
+
+
+
+
+## core packages
+pip install streamlit
+pip install supabase
+pip install python-dotenv
+pip install pandas
+pip install numpy
+pip install pillow
+pip install bcrypt
+
+
+## Computer Vision (Face Recognition)
+pip install opencv-python
+pip install insightface
+pip install onnxruntime
+
+## Voice Recognition
+pip install speechbrain
+pip install torchaudio
+pip install sounddevice
+pip install soundfile
+pip install scipy
+
+## QR Code Generation
+pip install segno
+
+## QR Code Scanning
+pip install pyzbar
+
+## Webcam in Streamlit
+pip install streamlit-webrtc
+
+## Audio Recording in Streamlit
+pip install audio-recorder-streamlit
+
+## Machine Learning Utilities
+pip install scikit-learn
+pip install matplotlib
+
+## Image Processing
+pip install imageio
+
+## face liveness detection
+pip install mediapipe
+
+## student ID cards
+pip install easyocr
