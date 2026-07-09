@@ -3,7 +3,7 @@ import pandas as pd
 
 
 from src.student.enroll_subject import enroll_subject_page
-# from src.attendance.face_register import face_register_page
+from src.attendance.face_register import face_register_page
 
 from src.database.db import (
     get_student_subjects,
@@ -28,7 +28,7 @@ def student_dashboard():
 
     st.divider()
 
-    dashboard_tab, subjects_tab, enroll_tab, attendance_tab, profile_tab = st.tabs(
+    dashboard_tab, subjects_tab, enroll_tab, attendance_tab, face_tab, profile_tab = st.tabs(
     [
         "🏠 Dashboard",
         "📚 My Subjects",
@@ -151,16 +151,16 @@ def student_dashboard():
         else:
             st.info("No attendance records found.")
 
-    # # ==================================================
-    # # FACE REGISTRATION
-    # # ==================================================
+    # ==================================================
+    # FACE REGISTRATION
+    # ==================================================
 
-    # with face_tab:
+    with face_tab:
 
-    #     st.subheader("Face Registration")
+        st.subheader("Face Registration")
 
-    #     face_register_page()
-    #     st.info("Face registration module coming soon.")
+        face_register_page()
+        st.info("Face registration module coming soon.")
 
     # ==================================================
     # PROFILE
