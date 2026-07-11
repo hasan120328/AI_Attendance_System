@@ -1,16 +1,17 @@
 import streamlit as st
 import pandas as pd
 
-
 from src.student.enroll_subject import enroll_subject_page
-from src.attendance.face_register import face_register_page
+from src.attendance.face.face_register import face_register_page
+from src.attendance.face.face_verify import verify_student_face
+from src.attendance.attendance_manager import (
+    mark_face_attendance
+)
+
 
 from src.database.db import (
     get_student_subjects,
-    get_student_attendance,
-    get_all_subjects,
-    enroll_student,
-    unenroll_student
+    get_student_attendance
 )
 
 
@@ -28,16 +29,25 @@ def student_dashboard():
 
     st.divider()
 
-    dashboard_tab, subjects_tab, enroll_tab, attendance_tab, face_tab, profile_tab = st.tabs(
-    [
-        "🏠 Dashboard",
-        "📚 My Subjects",
-        "➕ Enroll Subject",
-        "📋 Attendance",
-        "📸 Face Registration",
-        "👤 Profile"
-    ]
-)
+    (
+        dashboard_tab,
+        subjects_tab,
+        enroll_tab,
+        attendance_tab,
+        face_register_tab,
+        face_attendance_tab,
+        profile_tab
+    ) = st.tabs(
+        [
+            "🏠 Dashboard",
+            "📚 My Subjects",
+            "➕ Enroll Subject",
+            "📋 Attendance",
+            "📸 Face Registration",
+            "📷 Face Attendance",
+            "👤 Profile"
+        ]
+    )
 
     # ==================================================
     # DASHBOARD
@@ -88,19 +98,6 @@ def student_dashboard():
                     st.caption(f"Section: {info['section']}")
                     st.caption(f"Semester: {info['semester']}")
 
-                    if st.button(
-                        "Unenroll",
-                        key=f"unenroll_{info['subject_id']}"
-                    ):
-
-                        unenroll_student(
-                            student["student_id"],
-                            info["subject_id"]
-                        )
-
-                        st.success("Subject removed successfully.")
-                        st.rerun()
-
         else:
             st.info("You are not enrolled in any subject.")
 
@@ -113,10 +110,8 @@ def student_dashboard():
         enroll_subject_page()
 
     # ==================================================
-    # ATTENDANCE
+    # ATTENDANCE HISTORY
     # ==================================================
-    
-    
 
     with attendance_tab:
 
@@ -155,12 +150,58 @@ def student_dashboard():
     # FACE REGISTRATION
     # ==================================================
 
-    with face_tab:
-
-        st.subheader("Face Registration")
+    with face_register_tab:
 
         face_register_page()
-        st.info("Face registration module coming soon.")
+
+    # ==================================================
+    # FACE ATTENDANCE
+    # ==================================================
+
+    with face_attendance_tab:
+
+        st.subheader("📷 Face Attendance")
+
+        st.write(
+            "Verify your identity to mark attendance."
+        )
+
+        result = verify_student_face()
+
+    if result:
+
+        attendance = mark_face_attendance(
+
+            student_id=result["student_id"],
+
+            confidence=result["confidence"]
+
+        )
+
+        if attendance["success"]:
+
+            st.success(attendance["message"])
+
+        else:
+
+            st.warning(attendance["message"])
+
+        if result:
+
+            st.success(
+                f"""
+                ✅ Attendance Verified
+
+                Student ID: {result['student_id']}
+
+                Confidence: {result['confidence']:.3f}
+                """
+            )
+
+            # Next step:
+            # save_attendance(...)
+            # mark_attendance(...)
+            # create_attendance_record(...)
 
     # ==================================================
     # PROFILE

@@ -160,6 +160,9 @@ def is_student_enrolled(student_id, subject_id):
 
     return len(response.data) > 0
 
+
+
+
 # =====================================================
 # SUBJECT
 # =====================================================
@@ -241,8 +244,21 @@ def enroll_student(student_id, subject_id):
     )
 
     return response.data
+# =====================================================
+## to get student id 
+# =====================================================
+def get_student(student_id):
 
+    response = (
+        supabase
+        .table("students")
+        .select("*")
+        .eq("student_id", student_id)
+        .single()
+        .execute()
+    )
 
+    return response.data
 # =====================================================
 # REGISTERED STUDENTS FOR TEACHER
 # =====================================================
@@ -301,10 +317,25 @@ def get_student_subjects(student_id):
 
     return response.data
 
+
+# =====================================================
+# FACE EMBEDDING EXISTS
+# =====================================================
+
+def face_exists(student_id):
+
+    response = (
+        supabase
+        .table("face_embeddings")
+        .select("student_id")
+        .eq("student_id", student_id)
+        .execute()
+    )
+
+    return len(response.data) > 0
 # =====================================================
 # FACE EMBEDDINGS
 # =====================================================
-
 def save_face_embedding(
 
     student_id,
@@ -321,12 +352,32 @@ def save_face_embedding(
 
     }
 
-    response = (
-        supabase
-        .table("face_embeddings")
-        .insert(data)
-        .execute()
-    )
+    # ---------------------------------------
+    # Student already registered
+    # ---------------------------------------
+
+    if face_exists(student_id):
+
+        response = (
+            supabase
+            .table("face_embeddings")
+            .update(data)
+            .eq("student_id", student_id)
+            .execute()
+        )
+
+    # ---------------------------------------
+    # First registration
+    # ---------------------------------------
+
+    else:
+
+        response = (
+            supabase
+            .table("face_embeddings")
+            .insert(data)
+            .execute()
+        )
 
     return response.data
 
@@ -341,6 +392,111 @@ def get_face_embeddings():
     )
 
     return response.data
+
+## if face exists 
+def face_exists(student_id):
+
+    response = (
+        supabase
+        .table("face_embeddings")
+        .select("student_id")
+        .eq("student_id", student_id)
+        .execute()
+    )
+
+    return len(response.data) > 0
+# =====================================================
+## for active session 
+# =====================================================
+def get_active_session():
+
+    response = (
+
+        supabase
+
+        .table("attendance_sessions")
+
+        .select("*")
+
+        .eq("is_active", True)
+
+        .limit(1)
+
+        .execute()
+
+    )
+
+    if len(response.data) == 0:
+        return None
+
+    return response.data[0]
+
+# =====================================================
+## attendance_exists
+# =====================================================
+def attendance_exists(
+    student_id,
+    session_id
+):
+
+    response = (
+
+        supabase
+
+        .table("attendance")
+
+        .select("attendance_id")
+
+        .eq("student_id", student_id)
+
+        .eq("session_id", session_id)
+
+        .execute()
+
+    )
+
+    return len(response.data) > 0
+
+# =====================================================
+## save_attendance
+# =====================================================
+def save_attendance(
+    student_id,
+    subject_id,
+    session_id,
+    attendance_date,
+    method,
+    confidence
+):
+
+    data = {
+
+        "student_id": student_id,
+
+        "subject_id": subject_id,
+
+        "session_id": session_id,
+
+        "attendance_date": str(attendance_date),
+
+        "method": method,
+
+        "confidence": confidence
+
+    }
+
+    return (
+
+        supabase
+
+        .table("attendance")
+
+        .insert(data)
+
+        .execute()
+
+    )
+
 
 # =====================================================
 # VOICE EMBEDDINGS
